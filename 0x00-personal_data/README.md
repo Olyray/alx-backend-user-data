@@ -1,0 +1,1 @@
+This directory contains files which are solutions for the project on personal data.
