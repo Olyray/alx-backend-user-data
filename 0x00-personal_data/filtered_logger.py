@@ -74,7 +74,6 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
             password=db_password,
             database=db_name
         )
-        print("Connection to the database successful!")
         return conn
     except mysql.connector.Error as e:
         print(f"Error connecting to the database: {e}")
