@@ -33,7 +33,6 @@ def filter_request() -> None:
                        ]
 
     if auth.require_auth(request.path, exempt_paths):
-        print("Authorization header")
         auth_header = auth.authorization_header(request)
         user = auth.current_user(request)
         if auth_header is None:
