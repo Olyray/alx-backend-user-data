@@ -1,0 +1,1 @@
+This directory contains implemenation for a session authentication.
