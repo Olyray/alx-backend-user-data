@@ -75,7 +75,6 @@ class BasicAuth(Auth):
         """
         Retrieve the User instance for a request
         """
-        print("current_user was used")
         if request is None:
             return None
         authorization_header = self.authorization_header(request)
