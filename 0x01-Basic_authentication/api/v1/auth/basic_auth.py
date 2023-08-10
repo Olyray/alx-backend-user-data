@@ -4,6 +4,7 @@
 from .auth import Auth
 import base64
 from models.user import User
+from typing import TypeVar
 
 
 class BasicAuth(Auth):
@@ -55,7 +56,7 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(
             self,
-            user_email: str, user_pwd: str) -> User:
+            user_email: str, user_pwd: str) -> TypeVar('User'):
         """
         A function to get the User instance based on email and password
         """
