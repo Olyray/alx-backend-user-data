@@ -3,6 +3,9 @@
 
 from .auth import Auth
 import uuid
+from models.user import User
+from flask import request
+from typing import TypeVar
 
 
 class SessionAuth(Auth):
@@ -47,3 +50,14 @@ class SessionAuth(Auth):
            ):
             return None
         return self.user_id_by_session_id.get(session_id)
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Returns a user from a request
+
+        >>> current_user(request)
+        >>> <models.user.User object at 0x7fb8c29dbb80>
+        """
+        session_id = self.session_cookie(request)
+        user_id = self.user_id_for_session_id(session_id)
+        return User.get(user_id)
