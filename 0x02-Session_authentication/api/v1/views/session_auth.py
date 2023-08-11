@@ -3,7 +3,7 @@
 """
 import os
 from typing import Tuple
-from flask import jsonify, request
+from flask import jsonify, request, abort
 
 from models.user import User
 from api.v1.views import app_views
@@ -38,3 +38,13 @@ def login() -> Tuple[str, int]:
         return response
 
     return jsonify({"error": "wrong password"}), 401
+
+
+@app_views.route('/api/v1/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+def logout():
+    """Route to logout and delete session"""
+    from api.v1.app import auth
+    is_destroyed = auth.destroy_session(request)
+    if not is_destroyed:
+        abort(404)
+    return jsonify({})
