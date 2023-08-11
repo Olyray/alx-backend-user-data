@@ -1,29 +1,40 @@
 #!/usr/bin/env python3
+"""Module of session authenticating views.
 """
-A module to handle all the routes for Session Authentication
-"""
-from flask import jsonify, abort, Flask, request
-from api.v1.views import app_views
-from models.user import User
 import os
+from typing import Tuple
+from flask import jsonify, request
+
+from models.user import User
+from api.v1.views import app_views
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
-def login():
-    """A post route"""
-    email = request.form.get('email')
-    password = request.form.get('password')
-    if email is None:
+def login() -> Tuple[str, int]:
+    """Handles the login route for session authentication.
+    Returns:
+      - JSON representation of a User object or error message.
+    """
+    email = request.form.get('email', '').strip()
+    password = request.form.get('password', '').strip()
+
+    # Check for missing email or password
+    if not email:
         return jsonify({"error": "email missing"}), 400
-    if password is None:
+    if not password:
         return jsonify({"error": "password missing"}), 400
-    user_instance = User.search({'email': email})
-    if len(user_instance) == 0:
+
+    # Retrieve the User instance based on the email
+    users = User.search({'email': email})
+    if not users:
         return jsonify({"error": "no user found for this email"}), 404
-    if user_instance[0].is_valid_password(password):
-        return jsonify({"error": "wrong password"}), 401
-    from api.v1.app import auth
-    session_id = auth.create_session(user_instance[0].id)
-    instance_rep = jsonify(user_instance[0].to_json())
-    instance_rep.set_cookie(os.getenv('SESSION_NAME'), session_id)
-    return instance_rep
+
+    user = users[0]
+    if user.is_valid_password(password):
+        from api.v1.app import auth
+        session_id = auth.create_session(user.id)
+        response = jsonify(user.to_json())
+        response.set_cookie(os.getenv("SESSION_NAME"), session_id)
+        return response
+
+    return jsonify({"error": "wrong password"}), 401
