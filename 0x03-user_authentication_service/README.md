@@ -1,0 +1,1 @@
+This directory contains modules that are solutions for the User Authentication Service project.
