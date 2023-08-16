@@ -61,4 +61,6 @@ class DB:
                 raise ValueError
             else:
                 setattr(user_to_update, key, value)
+                self._session.add(user_to_update)
+                self._session.commit()
         return None
