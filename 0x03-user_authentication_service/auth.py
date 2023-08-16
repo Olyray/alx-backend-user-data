@@ -44,7 +44,7 @@ class Auth:
             if found_user:
                 return bcrypt.checkpw(
                     password.encode('utf-8'), found_user.hashed_password)
-        except Exception:
+        except Exception as e:
             return False
 
     def create_session(self, email: str) -> str:
