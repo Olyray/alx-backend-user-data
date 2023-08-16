@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from typing import TypeVar
 from user import User
+from sqlalchemy.exc import NoResultFound, InvalidRequestError
+import bcrypt
 
 from user import Base
 
@@ -32,7 +34,30 @@ class DB:
         return self.__session
 
     def add_user(self, email: str, hashed_password: str) -> User:
+        """Adds user to the database"""
         new_user = User(email=email, hashed_password=hashed_password)
         self._session.add(new_user)
         self._session.commit()
         return new_user
+
+    def find_user_by(self, **kwargs) -> User:
+        """Finds a user using keyword arguments"""
+        if kwargs is None:
+            raise InvalidRequestError
+        try:
+            found_user = self._session.query(User).filter_by(**kwargs).one()
+            return found_user
+        except InvalidRequestError:
+            raise
+        except NoResultFound:
+            raise
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """Updates a user using keyword arguments"""
+        user_to_update = self.find_user_by(id=user_id)
+        for key, value in kwargs.items():
+            if not hasattr(user_to_update, key):
+                raise ValueError
+            else:
+                setattr(user_to_update, key, value)
+        return None
