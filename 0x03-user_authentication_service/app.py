@@ -43,14 +43,11 @@ def login():
 def logout():
     """Logs out a user by deleting their session"""
     user_session_id = request.cookies.get('session_id')
-    from db import DB
-    database = DB()
-    try:
-        found_user = database.find_user_by(session_id=user_session_id)
-        AUTH.destroy_session(found_user.id)
-        return redirect('/')
-    except Exception:
+    found_user = AUTH.get_user_from_session_id(user_session_id)
+    if found_user is None:
         abort(403)
+    AUTH.destroy_session(found_user.id)
+    return redirect('/')
 
 
 if __name__ == "__main__":
