@@ -39,12 +39,14 @@ class Auth:
 
     def valid_login(self, email: str, password: str) -> bool:
         """Checks if a login is valid"""
+        print("valid_login was called")
         try:
             found_user = self._db.find_user_by(email=email)
             if found_user:
                 return bcrypt.checkpw(
                     password.encode('utf-8'), found_user.hashed_password)
         except Exception as e:
+            print(type(e).__name__)
             return False
 
     def create_session(self, email: str) -> str:

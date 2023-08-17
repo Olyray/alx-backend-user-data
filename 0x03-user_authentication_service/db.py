@@ -6,10 +6,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from typing import TypeVar
-from user import User
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
-from user import Base
+from user import Base, User
 
 
 class DB:
@@ -19,7 +18,7 @@ class DB:
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
-        self._engine = create_engine("sqlite:///a.db", echo=False)
+        self._engine = create_engine("sqlite:///a.db", echo=True)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -47,9 +46,9 @@ class DB:
         try:
             found_user = self._session.query(User).filter_by(**kwargs).one()
             return found_user
-        except InvalidRequestError:
-            raise
         except NoResultFound:
+            raise        
+        except InvalidRequestError:
             raise
 
     def update_user(self, user_id: int, **kwargs) -> None:
